@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -e
+
+# System user webcam    
+if ! getent passwd webcam > /dev/null; then
+        adduser --quiet --system --no-create-home \
+            --shell /bin/bash --group --gecos "Webcam user" webcam
+fi 
+if ! getent group webcam > /dev/null; then
+        addgroup --quiet --system webcam
+fi
+if ! id -Gn webcam | grep -qw webcam; then
+    adduser --quiet webcam webcam
+fi 
+
+if ! id -Gn webcam | grep -qw video; then
+    adduser --quiet webcam video
+fi 
+
+chown webcam:webcam /usr/bin/pi-webcam
+chmod +x /usr/bin/pi-webcam
+setcap 'cap_net_bind_service=+ep' /usr/bin/pi-webcam 
+systemctl enable pi-webcam.service
+systemctl start pi-webcam.service

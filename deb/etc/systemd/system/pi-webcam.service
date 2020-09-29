@@ -1,0 +1,10 @@
+[Unit]
+Description=Service to access the pi camera over http
+
+[Service]
+User=webcam
+Environment=GIN_MODE=release
+ExecStart=/usr/bin/pi-webcam -port 80
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,8 @@
+Package: pi-webcam
+Version: [[version]]
+Section: server
+Priority: optional
+Architecture: all
+Description: Web Service for Raspberry Pi Webcams 
+Maintainer: oliver.archner@uni-bayreuth.de
+Homepage: https://github.com/BayCEER/pi-webcam
