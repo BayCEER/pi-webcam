@@ -61,7 +61,11 @@ var yuvFlags = []string{
 	"vflip",
 }
 
+var quite bool
+
 func main() {
+
+	flag.BoolVar(&quite, "quite", false, "Turn off pi-webcam's output and error logs")
 
 	var user string
 	flag.StringVar(&user, "user", "webcam", "User name to access the camera")
@@ -83,7 +87,8 @@ func main() {
 
 	flag.Parse()
 
-	r := gin.Default()
+	r := gin.New()
+	r.Use(gin.Recovery())
 
 	api := r.Group("/", gin.BasicAuth(gin.Accounts{
 		user: password,
@@ -94,10 +99,9 @@ func main() {
 		cmd := exec.Command("raspistill", opts...)
 		img, err := cmd.CombinedOutput()
 		if err != nil {
-			log.Println(err)
+			LogError(err)
 			c.AbortWithStatus(http.StatusInternalServerError)
 		} else {
-			log.Println("Image captured")
 			c.DataFromReader(http.StatusOK, int64(len(img)), "image/"+c.DefaultQuery("encoding", "jpg"), bytes.NewReader(img), nil)
 		}
 	})
@@ -106,15 +110,24 @@ func main() {
 		cmd := exec.Command("raspiyuv", opts...)
 		img, err := cmd.CombinedOutput()
 		if err != nil {
-			log.Println(err)
+			LogError(err)
 			c.AbortWithStatus(http.StatusInternalServerError)
 		} else {
-			log.Println("Image captured")
 			c.DataFromReader(http.StatusOK, int64(len(img)), "image/octet-stream", bytes.NewReader(img), nil)
 		}
 	})
 
-	log.Printf("Starting pi-webcam on port:%v\n", port)
+	api.GET("/shutdown", func(c *gin.Context) {
+		err := exec.Command("sudo", "shutdown", "-h", "now").Start()
+		if err != nil {
+			LogError(err)
+			c.AbortWithStatus(http.StatusInternalServerError)
+		} else {
+			c.String(http.StatusOK, "Going down ...")
+		}
+	})
+
+	LogInfof("Starting pi-webcam on port:%v\n", port)
 
 	if tls {
 		r.RunTLS(fmt.Sprintf(":%v", port), certFile, keyFile)
@@ -136,6 +149,24 @@ func getOptions(c *gin.Context, commands []string, flags []string) (options []st
 			options = append(options, "--"+flag)
 		}
 	}
-	log.Printf("Options: %s\n", options)
+	LogInfof("Options: %s\n", options)
 	return
+}
+
+func LogError(err error) {
+	if !quite {
+		log.Println(err.Error())
+	}
+}
+
+func LogInfo(s string) {
+	if !quite {
+		log.Println(s)
+	}
+}
+
+func LogInfof(format string, v ...interface{}) {
+	if !quite {
+		log.Printf(format, v...)
+	}
 }

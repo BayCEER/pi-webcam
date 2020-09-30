@@ -13,10 +13,17 @@ if ! id -Gn webcam | grep -qw webcam; then
     adduser --quiet webcam webcam
 fi 
 
+# Allow video access
 if ! id -Gn webcam | grep -qw video; then
     adduser --quiet webcam video
 fi 
 
+# Allow shutdown 
+if ! id -Gn webcam | grep -qw sudo; then
+    adduser --quiet webcam sudo
+fi 
+
+chmod 0440 /etc/sudoers.d/011_shutdown
 chown webcam:webcam /usr/bin/pi-webcam
 chmod +x /usr/bin/pi-webcam
 setcap 'cap_net_bind_service=+ep' /usr/bin/pi-webcam 

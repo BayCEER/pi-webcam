@@ -1,0 +1,2 @@
+webcam ALL=(ALL) NOPASSWD: /sbin/reboot, /sbin/shutdown
+
