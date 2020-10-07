@@ -24,6 +24,8 @@ echo "deb http://www.bayceer.uni-bayreuth.de/repos/apt/ $(lsb_release -c -s) mai
 * **Oliver Archner** - *Developer* - [BayCEER, University of Bayreuth](https://www.bayceer.uni-bayreuth.de)
 
 ## History
+### Version 1.1.0, Oct, 2020
+- Added width and height parameters
 
 ### Version 1.0.0, Sep, 2020
 - Initial release with basic capture capabilities

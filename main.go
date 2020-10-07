@@ -29,6 +29,8 @@ var stillCommands = []string{
 	"saturation",
 	"ISO",
 	"shutter",
+	"width",
+	"height",
 }
 
 var stillFlags = []string{
@@ -51,6 +53,8 @@ var yuvCommands = []string{
 	"saturation",
 	"ISO",
 	"shutter",
+	"width",
+	"height",
 }
 
 var yuvFlags = []string{
